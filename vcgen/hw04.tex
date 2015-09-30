@@ -1,0 +1,76 @@
+\documentclass[11pt]{article}
+\usepackage{homework}
+\usepackage{enumerate}
+\usepackage{courier}
+\usepackage{url}
+\usepackage{textcomp}
+\sethwtitle{Software Analysis and Verification - Fall 2014}
+\sethwauthor{Ruzica Piskac}%
+\sethwnumber{01}%
+\sethwdate{\today}
+\makehwheader%
+
+\begin{document}
+\makehwtitle%
+
+
+Please submit your solution to your Dropbox at the classes*v2 system.\\
+
+The deadline for Homework 04 is October 07, 1:00PM.
+
+\section{Verification Condition Generation}
+
+Build a verification condition generator (VCG) based on computation of weakest
+preconditions, as described in the lectures.
+
+Your VCG should compute verification conditions, based on the code and
+provided annotations. To prove the resulting formulas, connect your VCG to a
+theorem prover to prove the verification conditions. You should use SMT-LIB
+format and an SMT solver of your choice.
+
+%%%%%%%%%%%%%%%%%%%%
+A code skeleton is provided on Yale's private Github service.  You must be
+connected to Yale network to be able to use it (simply use Yale's wifi).
+
+\begin{enumerate}
+\item Install Scala on your computer.
+\item Clone the skeleton repository (\texttt{git clone https://git.yale.edu/qc35/cs454.git}).
+\item Go to the directory \texttt{cs454/vcgen}.
+\item Run \texttt{make}, read the output and test the parser on an example.
+\item Edit \texttt{src/vcgen.scala}, fix bugs, rinse and repeat.
+\item To submit, compress the \texttt{vcgen} and use the Classes*v2 dropbox.
+\end{enumerate}
+
+Start the step~5 by modifying the parser to handle logical assertions,
+pre- and postconditions and loop invariants (inspire your code from what
+is already in the skeleton).  After that, write a recursive function that
+goes through the program AST and compute the weakest precondition.  Only
+at the end, write a printing function that outputs the verification condition
+using the SMT-LIB format.
+
+It is possible that we issue some amendments to the language or that I
+add extra material.  If so, I will signal it in a Classes*v2 announcement
+and you will use \texttt{git pull} to fetch the changes.
+%%%%%%%%%%%%%%%%%%%%
+
+You should submit your five (or more) benchmarks until October 06, 5PM (strict
+deadline!) so that we can prepare them for the competition.  Your benchmarks
+should include at least five programs in the original IMP language with loops.
+
+%%%%%%%%%%%%%%%%%%%%
+To earn bonus points, extend the IMP programming language with extra features
+and adapt your VCG program to handle them.  Provide a quick justification of
+the code you use in your VCG to generate weakest preconditions of these extensions.
+
+\begin{iterate}
+\item Pascal for loop (\texttt{for i = n to m do ... end}).
+\item Parallel assignment (\texttt{x,y := y,x;}.
+\item Arrays.
+\end{iterate}
+
+The items above are sorted by increasing difficulty and extra credit.
+Do not start working on extra credit if you are not confident your
+VCG is working properly for the simple cases.
+%%%%%%%%%%%%%%%%%%%%
+
+\end{document}

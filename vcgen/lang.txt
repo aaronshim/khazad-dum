@@ -1,0 +1,140 @@
+	The IMP Programming Language
+	& its assertion language
+
+
+Here follows the description of the minimal programming language
+you will be using for your verification condition generator.  Since
+annotations need to be parts of the language (loop invariants, pre and
+postconditions), the logic language is also described.
+
+The language description is given in traditional BNF style.  In the BNF
+syntax specification, keywords are written between double quotes (like
+"while" or "+").  The letter x stands for any variable.  Variables are
+sequences of letters, digits and _ that start with a letter.  The letter n
+stands for any decimal number.  A BNF description between brackets (like
+[ STMT ]) denotes arbitrary repetitions of the bracketed contents.  So,
+[ "no" ] will match both the empty string "", and "no no no".
+
+As in the lecture notes, I did not make a great job at separating program
+and logical variables.  The identifer set that we use to represent
+variables is the same for both program and logic variables.
+
+
+1. EXPRESSIONS
+
+We start the language description with arithmetic expressions.
+
+AEXP := n | x
+     | x "[" AEXP "]"
+     | "-" AEXP
+     | AEXP "+" AEXP
+     | AEXP "-" AEXP
+     | AEXP "*" AEXP
+     | AEXP "/" AEXP
+     | AEXP "%" AEXP
+     | "(" AEXP ")"
+
+Programs can make use of arrays, arrays and regular variables live in
+different namespaces, this means that 'a' and 'a[0]' are not related.
+In the first expression we denote the value of a regular integer
+variable, while in the second expression we denote 0th element of an
+array.
+
+Notice that there is no way to get the length of an array.  This is for
+the sake of simplicity, we assume arrays to be infinite (in both
+directions).  That is, 'a[-10]' and 'a[10]' always exist and, except if
+specified by a precondition, their value is initially undefined (like
+with regular variables).
+
+The precedence of multiplicative operators is, as usual in mathematics,
+higher than the one of additive operators.  This means that the arithmetic
+expression '3+4%x' is to be interpreted as '3+(4%x)'.  The associativity
+of operators does not matter since we are working with infinite precision
+integers.
+
+Program conditions will use boolean expressions, we will find condition
+in on while loops, and if statements.
+
+COMP := AEXP "=" AEXP
+     | AEXP "!=" AEXP
+     | AEXP "<=" AEXP
+     | AEXP ">=" AEXP
+     | AEXP "<" AEXP
+     | AEXP ">" AEXP
+
+BEXP := COMP
+     | "!" BEXP
+     | BEXP "||" BEXP
+     | BEXP "&&" BEXP
+     | "(" BEXP ")"
+
+The precendences of different boolean operators are described in the
+following table.
+
+  higher | ( )
+         | !
+         | &&
+  lower  | ||
+
+
+2. STATEMENTS
+
+Like in any traditional imperative language, statemtents of the IMP
+language can be chained together to form blocks that will be executed
+in sequence.
+
+BLOCK := [ STMT ]
+
+Since the IMP programming language is a tool for verification, we need
+to specify invariants on looping statements.  Logical assertions are
+noted ASSN in the following statement definition and will be defined in
+the next session.
+
+STMT := x ":=" AEXP ";"
+     | x "[" AEXP "]" ":=" AEXP ";"
+     | "if" BEXP "then" BLOCK "else" BLOCK "end"
+     | "if" BEXP "then" BLOCK "end"
+     | "while" BEXP [ "inv" ASSN ] "do" BLOCK "end"
+
+Because of the syntactic way we treat arrays, the statement 'a := b;'
+cannot be used to copy an array.  However, it is possible to copy a
+slice of array using a loop and assignments of the form 'a[i] := b[i];'
+
+The second form of if statements is a special case of the first one
+where the else part is an empty block.
+
+A complete program is simply a block that is given a name.  A program
+can have a set of pre and postconditions.
+
+PROG := "program" x [ "pre" ASSN ] [ "post" ASSN ] "is" BLOCK "end"
+
+
+3. ASSERTIONS
+
+Logical assertions are very similar to boolean expressions except that
+they provide first order quantifiers (quantifiers introducing variables
+to represent integers).
+
+ASSN := COMP
+     | "!" ASSN
+     | ASSN "||" ASSN
+     | ASSN "&&" ASSN
+     | ASSN "==>" ASSN
+     | "forall" [ x ] "," ASSN
+     | "exists" [ x ] "," ASSN
+     | "(" ASSN ")"
+
+
+ω. EXTENSIONS
+
+Here is a list of extensions that I considered during the definition of
+this programming language.  You might go an implement any of these for
+possible extra credit, and sure fun.
+
+- Write an evaluator and add print statements (for debug).
+- Use a lexer hack like in Go to avoid the use of semicolons at the
+  end of statements.
+- Support hexadecimal and octal numbers in the lexer.
+- Support "for" loops (like in Pascal, not like in C).
+- (hard) Support parallel assignments, like
+  x, y := y, x;

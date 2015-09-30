@@ -1,0 +1,8 @@
+program mult is
+  p := 0;
+  x := 0;
+  while x < n do
+    x := x + 1;
+    p := p + m;
+  end
+end

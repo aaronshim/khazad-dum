@@ -151,6 +151,164 @@ object VCGen {
   def main(args: Array[String]): Unit = {
     val reader = new FileReader(args(0))
     import ImpParser._;
-    println(parseAll(prog, reader))
+
+    val parsedProgram:ParseResult[Program] = parseAll(prog, reader)
+
+    parsedProgram match {
+      case Success(r, n) => handleResult(r)
+      case Failure(msg, n) => println(msg)
+      case Error(msg, n) => println(msg)
+    }
+  }
+
+  def handleResult(r: Program) = {
+    val name = r._1
+    val prepost : Block = r._2
+    val code : Block = r._3
+
+    println("Name: " + name)
+    println("Pre/post-conditions: ")
+    handleBlock(prepost)
+    println("Code: ")
+    handleBlock(code)
+  }
+
+  def handleBlock(block: Block, level: Int = 0): Unit = {
+    printlnTab("(", level)
+    for (line <- block) {
+      line match {
+        case ass: Assign => handleAssign(ass, level+1)
+        case w: While => handleWhile(w, level+1)
+        case i: Inv => handleInv(i, level+1)
+        case pre: Precondition => handlePrecondition(pre, level+1)
+        case post: Postcondition => handlePostcondition(post, level+1)
+        case _ => printlnTab(line, level+1)
+      }
+    }
+    printlnTab(")", level)
+  }
+
+  def handleWhile(w: While, level: Int = 0) = {
+    printlnTab("While(", level)
+      handleBoolExp(w.cond, level+1)
+      handleBlock(w.inv, level+1)
+      handleBlock(w.body, level+1)
+    printlnTab(")", level)
+  }
+
+  def handleInv(i: Inv, level: Int = 0) = {
+    printlnTab("Inv(", level)
+      handleBoolExp(i.cond, level+1)
+    printlnTab(")", level)
+  }
+  def handlePrecondition(p: Precondition, level: Int = 0) = {
+    printlnTab("Precondition(", level)
+      handleBoolExp(p.cond, level+1)
+    printlnTab(")", level)
+  }
+  def handlePostcondition(p: Postcondition, level: Int = 0) = {
+    printlnTab("Postcondition(", level)
+      handleBoolExp(p.cond, level+1)
+    printlnTab(")", level)
+  }
+
+  def handleAssign(ass: Assign, level: Int) = {
+    printlnTab("Assign(", level)
+      printlnTab(ass.x, level+1)
+      handleArithExp(ass.value, level+1)
+    printlnTab(")", level)
+  }
+
+  def handleBoolExp(b: BoolExp, level: Int): Unit = {
+    b match {
+      case cmp: BCmp => handleBCmp(cmp, level)
+      case conj: BConj => handleBConj(conj, level)
+      case disj: BDisj => handleBDisj(disj, level)
+      case imp: BImplies => handleBImplies(imp, level)
+      case fa: BForAll => handleBForAll(fa, level)
+      case _ => printlnTab(b, level)
+// BNot
+// BParens
+    }
+  }
+
+  def handleArithExp(a: ArithExp, level: Int): Unit = {
+    a match {
+      case n: Num => printlnTab(n, level)
+      case v: Var => printlnTab(v, level)
+      case add: Add => handleAdd(add, level)
+      case sub: Sub => handleSub(sub, level)
+      case mul: Mul => handleMul(mul, level)
+      case av: AVar => handleAVar(av, level)
+      case _ => printlnTab(a, level)
+// Div
+// Mod
+// Parens
+    }
+  }
+
+  def handleBCmp(b: BCmp, level: Int) = {
+    printlnTab("BCmp(", level)
+      handleArithExp(b.cmp._1, level+1)
+      printlnTab(b.cmp._2, level+1)
+      handleArithExp(b.cmp._3, level+1)
+    printlnTab(")", level)
+  }
+  def handleBConj(b: BConj, level: Int) = {
+    printlnTab("BConj(", level)
+      handleBoolExp(b.left, level+1)
+      handleBoolExp(b.right, level+1)
+    printlnTab(")", level)
+  }
+  def handleBDisj(b: BDisj, level: Int) = {
+    printlnTab("BDisj(", level)
+      handleBoolExp(b.left, level+1)
+      handleBoolExp(b.right, level+1)
+    printlnTab(")", level)
+  }
+
+  def handleBImplies(imp: BImplies, level: Int) = {
+    printlnTab("BImplies(", level)
+      handleBoolExp(imp.left, level+1)
+      printlnTab("==>", level+1)
+      handleBoolExp(imp.right, level+1)
+    printlnTab(")", level)
+  }
+
+  def handleBForAll(fa: BForAll, level: Int) = {
+    printlnTab("BForAll(", level)
+      printlnTab(fa.x, level+1)
+      handleBoolExp(fa.b, level+1)
+    printlnTab(")", level)
+  }
+
+  def handleAdd(a: Add, level: Int) = {
+    printlnTab("Add(", level)
+      handleArithExp(a.left, level+1)
+      handleArithExp(a.right, level+1)
+    printlnTab(")", level)
+  }
+  def handleSub(a: Sub, level: Int) = {
+    printlnTab("Sub(", level)
+      handleArithExp(a.left, level+1)
+      handleArithExp(a.right, level+1)
+    printlnTab(")", level)
+  }
+  def handleMul(a: Mul, level: Int) = {
+    printlnTab("Mul(", level)
+      handleArithExp(a.left, level+1)
+      handleArithExp(a.right, level+1)
+    printlnTab(")", level)
+  }
+
+  def handleAVar(av: AVar, level: Int) = {
+    printlnTab("AVar(", level)
+      printlnTab(av.name, level+1)
+      handleArithExp(av.index, level+1)
+    printlnTab(")", level)
+  }
+
+  def printlnTab(str: Any, level: Int) = {
+    println("  " * level + str)
   }
 }

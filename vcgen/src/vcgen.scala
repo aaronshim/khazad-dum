@@ -28,6 +28,7 @@ object VCGen {
   case class BNot(b: BoolExp) extends BoolExp
   case class BDisj(left: BoolExp, right: BoolExp) extends BoolExp
   case class BConj(left: BoolExp, right: BoolExp) extends BoolExp
+  case class BForAll(x: String, b: BoolExp) extends BoolExp
   case class BParens(b: BoolExp) extends BoolExp
 
 
@@ -37,16 +38,20 @@ object VCGen {
 
   case class Assign(x: String, value: ArithExp) extends Statement
   case class If(cond: BoolExp, th: Block, el: Block) extends Statement
-  case class While(cond: BoolExp, body: Block) extends Statement
+  case class While(cond: BoolExp, inv: Block, body: Block) extends Statement
+  case class Pre(cond: BoolExp) extends Statement
+  case class Post(cond: BoolExp) extends Statement
+  case class Inv(cond: BoolExp) extends Statement
 
 
   /* Complete programs. */
+  // type Program = Product3[String, Block, Block]
   type Program = Product2[String, Block]
 
 
   object ImpParser extends RegexParsers {
     /* General helpers. */
-    def pvar  : Parser[String] = "\\p{Alpha}(\\p{Alnum}|_)*".r
+    val pvar  : Parser[String] = "\\p{Alpha}(\\p{Alnum}|_)*".r
 
     /* Parsing for ArithExp. */
     def num   : Parser[ArithExp] = "-?\\d+".r ^^ (s => Num(s.toInt))
@@ -73,7 +78,7 @@ object VCGen {
 
     /* Parsing for Comparison. */
     def comp  : Parser[Comparison] =
-      aexp ~ ("=" | "<=" | ">=" | "<" | ">") ~ aexp ^^ {
+      aexp ~ ("=" | "<=" | ">=" | "<" | ">" | "==>") ~ aexp ^^ {
         case left ~ op ~ right => (left, op, right)
       }
 
@@ -88,7 +93,11 @@ object VCGen {
       bconj ~ rep("||" ~> bconj) ^^ {
         case left ~ list => (left /: list) { BDisj(_, _) }
       }
-    def bexp  : Parser[BoolExp] = bdisj
+    def bforall : Parser[BoolExp] =
+      ("forall" ~> pvar) ~ ("," ~> bexp) ^^ {
+        case v ~ b => BForAll(v, b)
+      }
+    def bexp  : Parser[BoolExp] = bforall | bdisj
 
     /* Parsing for Statement and Block. */
     def block : Parser[Block] = rep(stmt)
@@ -102,9 +111,13 @@ object VCGen {
       ("if" ~> bexp <~ "then") ~ (block <~ "end") ^^ {
         case c ~ t => If(c, t, Nil)
       } |
-      ("while" ~> (bexp /* ~ rep("inv" ~ assn) */) <~ "do") ~ (block <~ "end") ^^ {
-        case c ~ b => While(c, b)
+      ("while" ~> bexp) ~ (invariant <~ "do") ~ (block <~ "end") ^^ {
+        case c ~ i ~ b => While(c, i, b)
       }
+
+    def invariant : Parser[Block] = rep(invstmt)
+    def invstmt   : Parser[Statement] =
+      ("inv" ~> bexp) ^^ { Inv(_) }
 
     /* Parsing for Program. */
     def prog   : Parser[Program] =

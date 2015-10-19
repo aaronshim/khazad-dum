@@ -39,14 +39,13 @@ object VCGen {
   case class Assign(x: String, value: ArithExp) extends Statement
   case class If(cond: BoolExp, th: Block, el: Block) extends Statement
   case class While(cond: BoolExp, inv: Block, body: Block) extends Statement
-  case class Pre(cond: BoolExp) extends Statement
-  case class Post(cond: BoolExp) extends Statement
   case class Inv(cond: BoolExp) extends Statement
+  case class Precondition(cond: BoolExp) extends Statement
+  case class Postcondition(cond: BoolExp) extends Statement
 
 
   /* Complete programs. */
-  // type Program = Product3[String, Block, Block]
-  type Program = Product2[String, Block]
+  type Program = Product3[String, Block, Block]
 
 
   object ImpParser extends RegexParsers {
@@ -118,11 +117,16 @@ object VCGen {
     def invariant : Parser[Block] = rep(invstmt)
     def invstmt   : Parser[Statement] =
       ("inv" ~> bexp) ^^ { Inv(_) }
+    def prepost   : Parser[Block] = rep(prestmt | poststmt)
+    def prestmt   : Parser[Statement] =
+      ("pre" ~> bexp) ^^ { Precondition(_) }
+    def poststmt   : Parser[Statement] =
+      ("post" ~> bexp) ^^ { Postcondition(_) }
 
     /* Parsing for Program. */
     def prog   : Parser[Program] =
-      ("program" ~> pvar <~ "is") ~ (block <~ "end") ^^ {
-        case n ~ b => (n, b)
+      ("program" ~> pvar) ~ (prepost <~ "is") ~ (block <~ "end") ^^ {
+        case n ~ p ~ b => (n, p, b)
       }
   }
 

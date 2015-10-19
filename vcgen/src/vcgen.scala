@@ -15,6 +15,7 @@ object VCGen {
   case class Div(left: ArithExp, right: ArithExp) extends ArithExp
   case class Mod(left: ArithExp, right: ArithExp) extends ArithExp
   case class Parens(a: ArithExp) extends ArithExp
+  case class AVar(name: String, index: ArithExp) extends ArithExp
 
 
   /* Comparisons of arithmetic expressions. */
@@ -25,6 +26,7 @@ object VCGen {
   trait BoolExp
 
   case class BCmp(cmp: Comparison) extends BoolExp
+  case class BImplies(left: BoolExp, right: BoolExp) extends BoolExp
   case class BNot(b: BoolExp) extends BoolExp
   case class BDisj(left: BoolExp, right: BoolExp) extends BoolExp
   case class BConj(left: BoolExp, right: BoolExp) extends BoolExp
@@ -54,8 +56,12 @@ object VCGen {
 
     /* Parsing for ArithExp. */
     def num   : Parser[ArithExp] = "-?\\d+".r ^^ (s => Num(s.toInt))
+    def avar  : Parser[ArithExp] =
+      pvar ~ ("[" ~> aexp <~ "]") ^^ {
+        case pvar ~ aexp => AVar(pvar, aexp)
+      }
     def atom  : Parser[ArithExp] =
-      "(" ~> aexp <~ ")" |
+      "(" ~> aexp <~ ")" | avar |
       num | pvar ^^ { Var(_) } |
       "-" ~> atom ^^ { Sub(Num(0), _) }
     def factor: Parser[ArithExp] =
@@ -73,17 +79,33 @@ object VCGen {
           case (left, "-" ~ right) => Sub(left, right)
         }
       }
+
     def aexp  : Parser[ArithExp] = term
 
     /* Parsing for Comparison. */
     def comp  : Parser[Comparison] =
-      aexp ~ ("=" | "<=" | ">=" | "<" | ">" | "==>") ~ aexp ^^ {
+      aexp ~ ("=" | "<=" | ">=" | "<" | ">" | "!=") ~ aexp ^^ {
         case left ~ op ~ right => (left, op, right)
       }
 
+    /* Parsing for Implies. */
+    def implies : Parser[BImplies] =
+      (bexp <~ "==>") ~ bexp ^^ {
+        case left ~ right => BImplies(left, right)
+      }
+
     /* Parsing for BoolExp. */
+    def bforall : Parser[BoolExp] =
+      ("forall" ~> pvar <~ ",") ~ implies ^^ {
+        case v ~ b => BForAll(v, b)
+      } |
+      ("forall" ~> pvar <~ ",") ~ bexp ^^ {
+        case v ~ b => BForAll(v, b)
+      }
     def batom : Parser[BoolExp] =
-      "(" ~> bexp <~ ")" | comp ^^ { BCmp(_) } | "!" ~> batom ^^ { BNot(_) }
+      "(" ~> bexp <~ ")" |
+      comp ^^ { BCmp(_) } |
+      "!" ~> batom ^^ { BNot(_) } | bforall | implies
     def bconj : Parser[BoolExp] =
       batom ~ rep("&&" ~> batom) ^^ {
         case left ~ list => (left /: list) { BConj(_, _) }
@@ -92,11 +114,7 @@ object VCGen {
       bconj ~ rep("||" ~> bconj) ^^ {
         case left ~ list => (left /: list) { BDisj(_, _) }
       }
-    def bforall : Parser[BoolExp] =
-      ("forall" ~> pvar) ~ ("," ~> bexp) ^^ {
-        case v ~ b => BForAll(v, b)
-      }
-    def bexp  : Parser[BoolExp] = bforall | bdisj
+    def bexp  : Parser[BoolExp] = bdisj
 
     /* Parsing for Statement and Block. */
     def block : Parser[Block] = rep(stmt)

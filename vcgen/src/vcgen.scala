@@ -32,6 +32,8 @@ object VCGen {
   case class BConj(left: BoolExp, right: BoolExp) extends BoolExp
   case class BForAll(x: String, b: BoolExp) extends BoolExp
   case class BParens(b: BoolExp) extends BoolExp
+  case class BTrue() extends BoolExp
+  case class BFalse() extends BoolExp
 
 
   /* Statements and blocks. */
@@ -148,14 +150,251 @@ object VCGen {
       }
   }
 
+  object GCGen {
+    type GCBlock = List[GCStatement]
+
+    trait GCStatement
+
+    case class Assume(b: BoolExp) extends GCStatement
+    case class Havoc(x: String) extends GCStatement
+    case class Assert(b: BoolExp) extends GCStatement
+    case class GCParens(gc: GCBlock) extends GCStatement
+    case class BoxOp(left: GCStatement, right: GCStatement) extends GCStatement
+
+    var varCounter = 1
+
+    def generateGC(prog: Program): GCBlock = {
+      val name = prog._1
+      val prepost : Block = prog._2
+      val code : Block = prog._3
+
+      println("Generating GC for program '" + name + "'...")
+
+      // Get the pre and post conditions.
+      val(preconditions, postconditions) = extractPrePost(prepost)
+
+      var gc: GCBlock = List()
+
+      // Put in preconditions.
+      if (preconditions != None) {
+        gc :+= Assume(preconditions.get)
+      }
+
+      // Put in program gcs.
+      gc = gc ::: traverseCode(code)
+
+      // Put in postconditions.
+      if (postconditions != None) {
+        gc :+= Assume(postconditions.get)
+      }
+
+      return gc
+    }
+
+    def traverseCode(code: Block): GCBlock = {
+      var gctmp: GCBlock = List()
+
+      for (line <- code) {
+        line match {
+          case sAssign: Assign => gctmp = gctmp ::: appendAssign(sAssign)
+          case sIf: If => gctmp = gctmp ::: appendIf(sIf)
+          case sWhile: While => gctmp = gctmp ::: appendWhile(sWhile)
+          case _ => 0
+        }
+      }
+
+      return gctmp
+    }
+
+    def appendWhile(s: While): GCBlock = {
+      val inv: Block = s.inv
+      val cond: BoolExp = s.cond
+      val body: Block = s.body
+
+      var gctmp : GCBlock = List()
+
+      var invariant: Option[BoolExp] = None
+      for (i <- inv) {
+        i match {
+          case invar: Inv => {
+            if (invariant == None) {
+              invariant = Option(invar.cond)
+            } else {
+              invariant = Option(BDisj(invar.cond, invariant.get))
+            }
+          }
+        }
+      }
+
+      var invariantOrTrue: BoolExp = BTrue()
+      if (invariant != None) {
+        invariantOrTrue = invariant.get
+      }
+
+      gctmp :+= Assert(invariantOrTrue)
+
+      //havocs
+      val vars: List[String] = extractVars(body)
+      gctmp = gctmp ::: vars.map { x => Havoc(x) }
+
+      gctmp :+= Assume(invariantOrTrue)
+
+      gctmp :+= BoxOp(
+        GCParens(
+          Assume(cond) +:
+          traverseCode(body) :::
+          List(Assert(invariantOrTrue), Assume(BFalse()))
+        ),
+        Assume(BNot(cond))
+      )
+
+      return gctmp
+    }
+
+    def appendAssign(s: Assign): GCBlock = {
+      val x: String = s.x
+      var value: ArithExp = s.value
+
+      var gctmp: GCBlock = List()
+
+      gctmp :+=
+        Assume(
+          BCmp(
+            (Var(x), "=", Var(x)) // First x needs to be tmp
+          )
+        )
+      gctmp :+= Havoc(x)
+
+      value = replaceVarInArithExp(value, x, x + "f" + varCounter)
+      varCounter += 1
+
+      gctmp :+=
+        Assume(
+          BCmp(
+            (Var(x), "=", value)
+          )
+        )
+
+      return gctmp
+    }
+
+    def appendIf(s: If): GCBlock = {
+      val cond: BoolExp = s.cond
+      val body: Block = s.th
+      val el: Block = s.el
+
+      var gctmp: GCBlock = List()
+
+      gctmp :+=
+        BoxOp(
+          GCParens(
+            Assume(cond) +: traverseCode(body)
+          ),
+          GCParens(
+            Assume(BNot(cond)) +: traverseCode(el)
+          )
+        )
+
+      return gctmp
+    }
+
+    def replaceVarInArithExp(ae: ArithExp, x: String, tmp: String): ArithExp = {
+      ae match {
+        case v: Var => return Var(tmp)
+        case v: AVar => {
+          return AVar(tmp, replaceVarInArithExp(v.index, x, tmp))
+        }
+        case a: Add => {
+          return Add(
+            replaceVarInArithExp(a.left, x, tmp),
+            replaceVarInArithExp(a.right, x, tmp)
+          )
+        }
+        case a: Sub => {
+          return Sub(
+            replaceVarInArithExp(a.left, x, tmp),
+            replaceVarInArithExp(a.right, x, tmp)
+          )
+        }
+        case a: Mul => {
+          return Mul(
+            replaceVarInArithExp(a.left, x, tmp),
+            replaceVarInArithExp(a.right, x, tmp)
+          )
+        }
+        case a: Div => {
+          return Div(
+            replaceVarInArithExp(a.left, x, tmp),
+            replaceVarInArithExp(a.right, x, tmp)
+          )
+        }
+        case a: Mod => {
+          return Mod(
+            replaceVarInArithExp(a.left, x, tmp),
+            replaceVarInArithExp(a.right, x, tmp)
+          )
+        }
+        case p: Parens => {
+          return Parens(replaceVarInArithExp(p.a, x, tmp))
+        }
+        case n: Num => return n
+      }
+    }
+
+    def extractVars(code: Block): List[String] = {
+      var varList: List[String] = List()
+      for (line <- code) {
+        varList = varList ::: extractVarsFromStatement(line)
+      }
+      return varList
+    }
+
+    def extractVarsFromStatement(s: Statement): List[String] = {
+      var varList: List[String] = List()
+      s match {
+        case assignment: Assign => varList :+= assignment.x
+        case ifs: If => varList = varList ::: (extractVars(ifs.th) ::: extractVars(ifs.el))
+        case whiles: While => varList = varList ::: extractVars(whiles.body)
+        case _ => 0
+      }
+      return varList
+    }
+
+    def extractPrePost(prepost: Block): (Option[BoolExp], Option[BoolExp]) = {
+      var preconditions: Option[BoolExp] = None
+      var postconditions: Option[BoolExp] = None
+      for (line <- prepost) {
+        line match {
+          case pre: Precondition => {
+            if (preconditions == None) {
+              preconditions = Option(pre.cond)
+            } else {
+              preconditions = Option(BDisj(pre.cond, preconditions.get))
+            }
+          }
+          case post: Postcondition => {
+            if (postconditions == None) {
+              postconditions = Option(post.cond)
+            } else {
+              postconditions = Option(BDisj(post.cond, postconditions.get))
+            }
+          }
+        }
+      }
+      return (preconditions, postconditions)
+    }
+  }
+
   def main(args: Array[String]): Unit = {
     val reader = new FileReader(args(0))
-    import ImpParser._;
+    import ImpParser._
+    import GCGen._
 
     val parsedProgram:ParseResult[Program] = parseAll(prog, reader)
 
     parsedProgram match {
-      case Success(r, n) => handleResult(r)
+      case Success(r, n) => println(generateGC(r))
+      // case Success(r, n) => handleResult(r)
       case Failure(msg, n) => println(msg)
       case Error(msg, n) => println(msg)
     }
@@ -219,7 +458,7 @@ object VCGen {
     printlnTab(")", level)
   }
 
-  def handleBoolExp(b: BoolExp, level: Int): Unit = {
+  def handleBoolExp(b: BoolExp, level: Int = 0): Unit = {
     b match {
       case cmp: BCmp => handleBCmp(cmp, level)
       case conj: BConj => handleBConj(conj, level)

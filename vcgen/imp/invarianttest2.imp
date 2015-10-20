@@ -1,5 +1,6 @@
 program find
   pre  0 <= N
+  pre  0 <= N
   post a[n] = x || forall i, (0 <= i && i < N) ==> a[i] != x
 is
   n := 0;

@@ -1,0 +1,16 @@
+program count is
+  x := x - 1;
+  if x = 1 then
+    x := x + 1;
+  end
+  if x = 1 then
+    x := x + 1;
+  else
+    x := x * 2;
+  end
+  while x <= 10 do
+    x := x + 1;
+    y := x;
+    z := p;
+  end
+end

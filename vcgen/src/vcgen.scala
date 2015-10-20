@@ -383,6 +383,46 @@ object VCGen {
       }
       return (preconditions, postconditions)
     }
+
+    def handleGCStatement(gcs: GCStatement, level: Int) {
+      gcs match {
+        case a: Assume => handleAssume(a, level)
+        case h: Havoc => handleHavoc(h, level)
+        case a: Assert => handleAssert(a, level)
+        case p: GCParens => handleGCParens(p, level)
+        case b: BoxOp => handleBoxOp(b, level)
+      }
+    }
+    def handleGC(gc: GCBlock, level: Int = 0) = {
+      for (s <- gc) {
+        handleGCStatement(s, level)
+      }
+    }
+
+    def handleAssume(a: Assume, level: Int) = {
+      printlnTab("Assume(", level)
+        handleBoolExp(a.b, level+1)
+      printlnTab(")", level)
+    }
+    def handleHavoc(h: Havoc, level: Int) = {
+      printlnTab("Havoc(" + h.x + ")", level)
+    }
+    def handleAssert(a: Assert, level: Int) = {
+      printlnTab("Assume(", level)
+        handleBoolExp(a.b, level+1)
+      printlnTab(")", level)
+    }
+    def handleGCParens(p: GCParens, level: Int) = {
+      printlnTab("(", level)
+        handleGC(p.gc, level+1)
+      printlnTab(")", level)
+    }
+    def handleBoxOp(b: BoxOp, level: Int) = {
+      printlnTab("BoxOp(", level)
+        handleGCStatement(b.left, level+1)
+        handleGCStatement(b.right, level+1)
+      printlnTab(")", level)
+    }
   }
 
   def main(args: Array[String]): Unit = {
@@ -393,7 +433,7 @@ object VCGen {
     val parsedProgram:ParseResult[Program] = parseAll(prog, reader)
 
     parsedProgram match {
-      case Success(r, n) => println(generateGC(r))
+      case Success(r, n) => handleGC(generateGC(r))
       // case Success(r, n) => handleResult(r)
       case Failure(msg, n) => println(msg)
       case Error(msg, n) => println(msg)

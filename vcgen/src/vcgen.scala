@@ -595,7 +595,7 @@ object VCGen {
     }
 
     // final touches
-    input += ("(assert " + boolExpToSMT(wp) + ")\n")
+    input += ("(assert (not " + boolExpToSMT(wp) + "))\n")
     input += "(check-sat)\n"
 
     // now what?

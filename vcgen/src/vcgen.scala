@@ -579,12 +579,12 @@ object VCGen {
         */
         case x: BCmp => {
           x.cmp._2 match {
-            case "!=" => "(! (=" + aExpToSMT(x.cmp._1) + " " + aExpToSMT(x.cmp._3) + "))"
+            case "!=" => "(not (=" + aExpToSMT(x.cmp._1) + " " + aExpToSMT(x.cmp._3) + "))"
             case comparator => "(" + comparator + " " +  aExpToSMT(x.cmp._1) + " " + aExpToSMT(x.cmp._3) + ")"
           }
         }
         case x: BImplies => "(implies " + boolExpToSMT(x.left) + " " + boolExpToSMT(x.right) + ")"
-        case x: BNot => "(! " + boolExpToSMT(x.b) + ")"
+        case x: BNot => "(not " + boolExpToSMT(x.b) + ")"
         case x: BDisj => "(or " + boolExpToSMT(x.left) + " " + boolExpToSMT(x.right) + ")"
         case x: BConj => "(and " + boolExpToSMT(x.left) + " " + boolExpToSMT(x.right) + ")"
         case x: BForAll => "(forall ((" + x.x + " Int)) " + boolExpToSMT(x.b) + ")"

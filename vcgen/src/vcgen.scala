@@ -491,6 +491,113 @@ object VCGen {
   // take the VC from the computed weakest precondition of the last step and write it in Z3 syntax
   def generateZ3(wp : BoolExp): Unit = {
     // todo
+    var input = ""
+
+    // write these in the form "(declare-fun * () Int)
+    def extractVarsFromBExp(b: BoolExp): List[String] = {
+      b match {
+        case cmp: BCmp => extractVarsFromAExp(cmp.cmp._1) ::: extractVarsFromAExp(cmp.cmp._3)
+        case implies: BImplies => extractVarsFromBExp(implies.left) ::: extractVarsFromBExp(implies.right)
+        case bnot: BNot => extractVarsFromBExp(bnot.b)
+        case bdisj: BDisj => extractVarsFromBExp(bdisj.left) ::: extractVarsFromBExp(bdisj.right)
+        case bconj: BConj => extractVarsFromBExp(bconj.left) ::: extractVarsFromBExp(bconj.right)
+        case fa: BForAll => fa.x :: extractVarsFromBExp(fa.b)
+        case parens: BParens => extractVarsFromBExp(parens.b)
+        case _ => List()
+      }
+    }
+    def extractVarsFromAExp(a: ArithExp): List[String] = {
+      a match {
+        /*
+        case class Num(value: Int) extends ArithExp
+        case class Var(name: String) extends ArithExp
+        case class Add(left: ArithExp, right: ArithExp) extends ArithExp
+        case class Sub(left: ArithExp, right: ArithExp) extends ArithExp
+        case class Mul(left: ArithExp, right: ArithExp) extends ArithExp
+        case class Div(left: ArithExp, right: ArithExp) extends ArithExp
+        case class Mod(left: ArithExp, right: ArithExp) extends ArithExp
+        case class Parens(a: ArithExp) extends ArithExp
+        case class AVar(name: String, index: ArithExp) extends ArithExp
+         */
+        case v: Var => List(v.name)
+        case a: Add => extractVarsFromAExp(a.left) ::: extractVarsFromAExp(a.right)
+        case s: Sub => extractVarsFromAExp(s.left) ::: extractVarsFromAExp(s.right)
+        case m: Mul => extractVarsFromAExp(m.left) ::: extractVarsFromAExp(m.right)
+        case d: Div => extractVarsFromAExp(d.left) ::: extractVarsFromAExp(d.right)
+        case m: Mod => extractVarsFromAExp(m.left) ::: extractVarsFromAExp(m.right)
+        case p: Parens => extractVarsFromAExp(p.a)
+        case _ => List()
+      }
+    }
+    var vars = extractVarsFromBExp(wp)
+    vars = vars.distinct // clean repeat variables
+    for (v <- vars) {
+      input += ("(declare-fun " + v + " () Int)\n")
+    }
+
+    def boolExpToSMT(b: BoolExp): String = {
+      // helper for this calculation
+      def aExpToSMT(a: ArithExp): String = {
+        a match {
+          /*
+          case class Num(value: Int) extends ArithExp
+          case class Var(name: String) extends ArithExp
+          case class Add(left: ArithExp, right: ArithExp) extends ArithExp
+          case class Sub(left: ArithExp, right: ArithExp) extends ArithExp
+          case class Mul(left: ArithExp, right: ArithExp) extends ArithExp
+          case class Div(left: ArithExp, right: ArithExp) extends ArithExp
+          case class Mod(left: ArithExp, right: ArithExp) extends ArithExp
+          case class Parens(a: ArithExp) extends ArithExp
+          case class AVar(name: String, index: ArithExp) extends ArithExp
+           */
+          case x: Num => x.value.toString
+          case x: Var => x.name
+          case x: Add => "(+ " + aExpToSMT(x.left) + " " + aExpToSMT(x.right) + ")"
+          case x: Sub => "(- " + aExpToSMT(x.left) + " " + aExpToSMT(x.right) + ")"
+          case x: Mul => "(* " + aExpToSMT(x.left) + " " + aExpToSMT(x.right) + ")"
+          case x: Div => "(/ " + aExpToSMT(x.left) + " " + aExpToSMT(x.right) + ")"
+          case x: Mod => "(mod " + aExpToSMT(x.left) + " " + aExpToSMT(x.right) + ")"
+          case x: Parens => aExpToSMT(x.a) // I think this is the right way, since all levels come wrapped in parenthesis anyway?
+          case _ => "" // eek
+        }
+      }
+
+      b match {
+        /*
+        case class BCmp(cmp: Comparison) extends BoolExp
+        case class BImplies(left: BoolExp, right: BoolExp) extends BoolExp
+        case class BNot(b: BoolExp) extends BoolExp
+        case class BDisj(left: BoolExp, right: BoolExp) extends BoolExp
+        case class BConj(left: BoolExp, right: BoolExp) extends BoolExp
+        case class BForAll(x: String, b: BoolExp) extends BoolExp
+        case class BParens(b: BoolExp) extends BoolExp
+        case class BTrue() extends BoolExp
+        case class BFalse() extends BoolExp
+        */
+        case x: BCmp => {
+          x.cmp._2 match {
+            case "!=" => "(! (=" + aExpToSMT(x.cmp._1) + " " + aExpToSMT(x.cmp._3) + "))"
+            case comparator => "(" + comparator + " " +  aExpToSMT(x.cmp._1) + " " + aExpToSMT(x.cmp._3) + ")"
+          }
+        }
+        case x: BImplies => "(implies " + boolExpToSMT(x.left) + " " + boolExpToSMT(x.right) + ")"
+        case x: BNot => "(! " + boolExpToSMT(x.b) + ")"
+        case x: BDisj => "(or " + boolExpToSMT(x.left) + " " + boolExpToSMT(x.right) + ")"
+        case x: BConj => "(and " + boolExpToSMT(x.left) + " " + boolExpToSMT(x.right) + ")"
+        case x: BForAll => "(forall ((" + x.x + " Int)) " + boolExpToSMT(x.b) + ")"
+        case x: BParens => boolExpToSMT(x.b) // everything comes attached to parenthesis anyway
+        case x: BTrue => "true" // these primitives will not be called outside parenthetical structures?
+        case x: BFalse => "false"
+      }
+    }
+
+    // final touches
+    input += ("(assert " + boolExpToSMT(wp) + ")\n")
+    input += "(check-sat)\n"
+
+    // now what?
+    println("OUR Z3 INPUT:")
+    println(input)
   }
 
   def main(args: Array[String]): Unit = {
@@ -501,7 +608,11 @@ object VCGen {
     val parsedProgram:ParseResult[Program] = parseAll(prog, reader)
 
     parsedProgram match {
-      case Success(r, n) => handleGC(generateGC(r))
+      case Success(r, n) => {
+        var gc = generateGC(r)
+        handleGC(gc)
+        generateZ3(generateVC(gc))
+      }
       // case Success(r, n) => handleResult(r)
       case Failure(msg, n) => println(msg)
       case Error(msg, n) => println(msg)

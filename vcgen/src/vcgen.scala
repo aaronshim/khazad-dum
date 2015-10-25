@@ -185,7 +185,7 @@ object VCGen {
 
       // Put in postconditions.
       if (postconditions != None) {
-        gc :+= Assume(postconditions.get)
+        gc :+= Assert(postconditions.get)
       }
 
       return gc
@@ -471,7 +471,7 @@ object VCGen {
       printlnTab("Havoc(" + h.x + ")", level)
     }
     def handleAssert(a: Assert, level: Int) = {
-      printlnTab("Assume(", level)
+      printlnTab("Assert(", level)
         handleBoolExp(a.b, level+1)
       printlnTab(")", level)
     }

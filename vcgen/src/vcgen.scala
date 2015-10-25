@@ -257,16 +257,18 @@ object VCGen {
 
       var gctmp: GCBlock = List()
 
+      // WE NEED TO GENERATE A TMP
+      var freshVariable = newFreshVariable(x)
+
       gctmp :+=
         Assume(
           BCmp(
-            (Var(x), "=", Var(x)) // First x needs to be tmp
+            (Var(freshVariable), "=", Var(x)) // First x needs to be tmp
           )
         )
       gctmp :+= Havoc(x)
 
-      value = replaceVarInArithExp(value, x, x + "f" + varCounter)
-      varCounter += 1
+      value = replaceVarInArithExp(value, x, freshVariable)
 
       gctmp :+=
         Assume(
@@ -409,26 +411,22 @@ object VCGen {
 
       // unwrap the GC block
       def computeWP(gcs: GCBlock, seed: BoolExp): BoolExp = {
-        //gcs.foldRight(seed)((tail, b) => computeWPStep(tail, b))
+        gcs.foldRight(seed)((head, b) => computeWPStep(head, b))
 
+        /*
         gcs.reverse match {
           case Nil => seed
-          case gc :: tail => computeWP(tail, computeWPStep(gc, seed))
+          case gc :: tail => computeWP(tail.reverse, computeWPStep(gc, seed))
         }
+        */
 
-      }
-
-      // for translating havocs-- since varCounter is continuously running we are guarenteed no conflicts
-      def newFreshVariable() : String = {
-        varCounter += 1
-        "a" + varCounter
       }
 
       // rules for each of the GC commands minus the c1 ; c2 case
       def computeWPStep(gc: GCStatement, b: BoolExp): BoolExp = {
         gc match {
           case assume: Assume => BImplies(assume.b, b)
-          case havoc: Havoc => replaceVarInBoolExp(b, havoc.x, newFreshVariable())
+          case havoc: Havoc => replaceVarInBoolExp(b, havoc.x, newFreshVariable(havoc.x))
           case assert: Assert => BConj(assert.b, b)
           case parens: GCParens => computeWP(parens.gc, b)
           case box: BoxOp => BConj(computeWPStep(box.left, b), computeWPStep(box.right, b))
@@ -437,6 +435,13 @@ object VCGen {
 
       // returning-- essentially, the whole function is a wrapper for this
       computeWP(gcs, formula)
+    }
+
+    // for assume-havoc-assert cycles in translating Assign statments
+    //  as well as translating out Havoc statments during WP
+    def newFreshVariable(x : String) : String = {
+      varCounter += 1
+      x + "f" + varCounter
     }
 
     // just like our replace arithmetic method

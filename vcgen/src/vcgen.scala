@@ -408,11 +408,14 @@ object VCGen {
       var formula = BTrue()
 
       // unwrap the GC block
-      def computeWP(gcs: GCBlock, b: BoolExp): BoolExp = {
-        gcs match {
-          case Nil => b
-          case gc :: tail => computeWP(tail, computeWPStep(gc, b))
+      def computeWP(gcs: GCBlock, seed: BoolExp): BoolExp = {
+        //gcs.foldRight(seed)((tail, b) => computeWPStep(tail, b))
+
+        gcs.reverse match {
+          case Nil => seed
+          case gc :: tail => computeWP(tail, computeWPStep(gc, seed))
         }
+
       }
 
       // for translating havocs-- since varCounter is continuously running we are guarenteed no conflicts

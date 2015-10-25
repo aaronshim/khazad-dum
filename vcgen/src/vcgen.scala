@@ -446,7 +446,7 @@ object VCGen {
           var left: ArithExp = cmp.cmp._1
           var comparator: String = cmp.cmp._2
           var right: ArithExp = cmp.cmp._3
-          BCmp((replaceVarInArithExp(left, find, replace), comparator, replaceVarInArithExp(left, find, replace)))
+          BCmp((replaceVarInArithExp(left, find, replace), comparator, replaceVarInArithExp(right, find, replace)))
         }
         case implies: BImplies => BImplies(replaceVarInBoolExp(implies.left, find, replace),
           replaceVarInBoolExp(implies.right, find, replace))

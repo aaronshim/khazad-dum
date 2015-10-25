@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d3dc4339-5dcf-4b26-b809-0c9301e1e141" name="Default" comment="wrote Guarded Command =&gt; Weakest Precondition Formula level">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vcgen/vcgen.iml" afterPath="$PROJECT_DIR$/vcgen/vcgen.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vcgen/imp/count.imp" afterPath="$PROJECT_DIR$/vcgen/imp/count.imp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vcgen/src/vcgen.scala" afterPath="$PROJECT_DIR$/vcgen/src/vcgen.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -31,47 +30,24 @@
       <file leaf-file-name="vcgen.scala" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/vcgen/src/vcgen.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.361809">
-              <caret line="488" column="3" selection-start-line="488" selection-start-column="3" selection-end-line="488" selection-end-column="3" />
+            <state vertical-scroll-proportion="3.1503758">
+              <caret line="450" column="92" selection-start-line="450" selection-start-column="92" selection-end-line="450" selection-end-column="92" />
               <folding>
-                <element signature="e#0#38#0" expanded="true" />
-                <element signature="e#1899#5150#0" expanded="false" />
-                <element signature="e#5556#6221#0" expanded="false" />
-                <element signature="e#6227#6620#0" expanded="false" />
-                <element signature="e#6626#7678#0" expanded="false" />
-                <element signature="e#7684#8198#0" expanded="false" />
-                <element signature="e#8204#8591#0" expanded="false" />
-                <element signature="e#8597#9819#0" expanded="false" />
-                <element signature="e#9825#10035#0" expanded="false" />
-                <element signature="e#10041#10442#0" expanded="false" />
-                <element signature="e#10448#11239#0" expanded="false" />
-                <element signature="e#11245#11575#0" expanded="false" />
-                <element signature="e#11770#12969#0" expanded="false" />
-                <element signature="e#12975#14245#0" expanded="false" />
-                <element signature="e#14251#14400#0" expanded="false" />
-                <element signature="e#14405#14498#0" expanded="false" />
-                <element signature="e#14503#14652#0" expanded="false" />
-                <element signature="e#14657#14800#0" expanded="false" />
-                <element signature="e#14805#15002#0" expanded="false" />
-                <element signature="e#15582#15833#0" expanded="false" />
-                <element signature="e#15837#16340#0" expanded="false" />
-                <element signature="e#16344#16558#0" expanded="false" />
-                <element signature="e#16562#16701#0" expanded="false" />
-                <element signature="e#16704#16870#0" expanded="false" />
-                <element signature="e#16873#17042#0" expanded="false" />
-                <element signature="e#17046#17229#0" expanded="false" />
-                <element signature="e#17627#18029#0" expanded="false" />
-                <element signature="e#18033#18250#0" expanded="false" />
-                <element signature="e#18253#18432#0" expanded="false" />
-                <element signature="e#18435#18614#0" expanded="false" />
-                <element signature="e#18618#18845#0" expanded="false" />
-                <element signature="e#18849#19027#0" expanded="false" />
-                <element signature="e#19031#19206#0" expanded="false" />
-                <element signature="e#19209#19384#0" expanded="false" />
-                <element signature="e#19387#19562#0" expanded="false" />
-                <element signature="e#19566#19743#0" expanded="false" />
-                <element signature="e#19747#19823#0" expanded="false" />
+                <element signature="e#14338#14487#0" expanded="false" />
+                <element signature="e#14492#14585#0" expanded="false" />
+                <element signature="e#14744#14887#0" expanded="false" />
+                <element signature="e#14892#15089#0" expanded="false" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="simple.imp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/vcgen/imp/simple.imp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="2" column="2" selection-start-line="2" selection-start-column="2" selection-end-line="2" selection-end-column="2" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -89,7 +65,9 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+        <option value="$PROJECT_DIR$/vcgen/imp/count.imp" />
         <option value="$PROJECT_DIR$/vcgen/src/vcgen.scala" />
+        <option value="$PROJECT_DIR$/vcgen/imp/simple.imp" />
       </list>
     </option>
   </component>
@@ -136,7 +114,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
@@ -170,8 +147,23 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cs454" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="vcgen" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="imp" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -187,6 +179,116 @@
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="FullScreen" value="false" />
+  </component>
+  <component name="RestoreUpdateTree" date="Moments ago" ActionInfo="_Update">
+    <UpdatedFiles>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Updated from server" />
+        <option name="myStatusName" value="Changed on server" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="CHANGED_ON_SERVER" />
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Updated" />
+          <option name="myStatusName" value="Changed" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="UPDATED" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Created" />
+          <option name="myStatusName" value="Created" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="CREATED" />
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/vcgen/imp/simple.imp</PATH>
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Deleted" />
+          <option name="myStatusName" value="Deleted" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="true" />
+          <option name="myId" value="REMOVED_FROM_REPOSITORY" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Restored" />
+          <option name="myStatusName" value="Will be restored" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="RESTORED" />
+        </FILE-GROUP>
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Modified" />
+        <option name="myStatusName" value="Modified" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MODIFIED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Skipped" />
+        <option name="myStatusName" value="Skipped" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="SKIPPED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged with conflicts" />
+        <option name="myStatusName" value="Will be merged with conflicts" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED_WITH_CONFLICTS" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged with tree conflicts" />
+        <option name="myStatusName" value="Merged with tree conflicts" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED_WITH_TREE_CONFLICT" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged with property conflicts" />
+        <option name="myStatusName" value="Will be merged with property conflicts" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED_WITH_PROPERTY_CONFLICT" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged" />
+        <option name="myStatusName" value="Will be merged" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Not in repository" />
+        <option name="myStatusName" value="Not in repository" />
+        <option name="mySupportsDeletion" value="true" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="UNKNOWN" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Locally added" />
+        <option name="myStatusName" value="Locally added" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="LOCALLY_ADDED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Locally removed" />
+        <option name="myStatusName" value="Locally removed" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="LOCALLY_REMOVED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Switched" />
+        <option name="myStatusName" value="Switched" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="SWITCHED" />
+      </FILE-GROUP>
+    </UpdatedFiles>
   </component>
   <component name="RunManager" selected="Application.VCGen">
     <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
@@ -490,7 +592,7 @@
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <option name="MAIN_CLASS_NAME" value="VCGen" />
       <option name="VM_PARAMETERS" value="" />
-      <option name="PROGRAM_PARAMETERS" value="imp\count.imp" />
+      <option name="PROGRAM_PARAMETERS" value="imp\simple.imp" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/vcgen" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" value="" />
@@ -522,12 +624,38 @@
       <updated>1445236509308</updated>
       <workItem from="1445236515406" duration="340000" />
       <workItem from="1445701177778" duration="268000" />
-      <workItem from="1445728446173" duration="7516000" />
+      <workItem from="1445728446173" duration="12733000" />
+      <workItem from="1445778985322" duration="2561000" />
     </task>
+    <task id="LOCAL-00001" summary="wrote Guarded Command =&gt; Weakest Precondition Formula level">
+      <created>1445741393743</created>
+      <option name="number" value="00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1445741393743</updated>
+    </task>
+    <task id="LOCAL-00002" summary="In GC, the way to add postconditons at the end is to make it an &quot;assert&quot;, not an &quot;assume&quot;">
+      <created>1445742529493</created>
+      <option name="number" value="00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1445742529493</updated>
+    </task>
+    <task id="LOCAL-00003" summary="got rudimentary VC to SMT conversion running and verified that it produces correct syntax-- but for some reason, everything comes back as &quot;satisfiable&quot; on Z3 when I test it...">
+      <created>1445746499640</created>
+      <option name="number" value="00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1445746499640</updated>
+    </task>
+    <task id="LOCAL-00004" summary="one big problem we had was that our recursive WP calculation was doing the recursion the wrong way around">
+      <created>1445780280103</created>
+      <option name="number" value="00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1445780280103</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="8124000" />
+    <option name="totallyTimeSpent" value="15902000" />
   </component>
   <component name="TodoView" selected-index="4">
     <todo-panel id="selected-file">
@@ -543,19 +671,18 @@
     <editor active="false" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32913387" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32913387" sideWeight="0.49707174" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32913387" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32755905" sideWeight="0.50292826" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32755905" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32913387" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32755905" sideWeight="0.49707174" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24743778" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -566,6 +693,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -581,11 +709,14 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="wrote Guarded Command =&gt; Weakest Precondition Formula level" />
-    <option name="LAST_COMMIT_MESSAGE" value="wrote Guarded Command =&gt; Weakest Precondition Formula level" />
+    <MESSAGE value="In GC, the way to add postconditons at the end is to make it an &quot;assert&quot;, not an &quot;assume&quot;" />
+    <MESSAGE value="got rudimentary VC to SMT conversion running and verified that it produces correct syntax-- but for some reason, everything comes back as &quot;satisfiable&quot; on Z3 when I test it..." />
+    <MESSAGE value="one big problem we had was that our recursive WP calculation was doing the recursion the wrong way around" />
+    <option name="LAST_COMMIT_MESSAGE" value="one big problem we had was that our recursive WP calculation was doing the recursion the wrong way around" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="8" />
+      <option name="time" value="14" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -599,43 +730,10 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#0#38#0" expanded="true" />
-            <element signature="e#1899#5150#0" expanded="false" />
-            <element signature="e#5556#6221#0" expanded="false" />
-            <element signature="e#6227#6620#0" expanded="false" />
-            <element signature="e#6626#7678#0" expanded="false" />
-            <element signature="e#7684#8198#0" expanded="false" />
-            <element signature="e#8204#8591#0" expanded="false" />
-            <element signature="e#8597#9819#0" expanded="false" />
-            <element signature="e#9825#10035#0" expanded="false" />
-            <element signature="e#10041#10442#0" expanded="false" />
-            <element signature="e#10448#11239#0" expanded="false" />
-            <element signature="e#11245#11575#0" expanded="false" />
-            <element signature="e#11770#12969#0" expanded="false" />
-            <element signature="e#12975#14245#0" expanded="false" />
-            <element signature="e#14251#14400#0" expanded="false" />
-            <element signature="e#14405#14498#0" expanded="false" />
-            <element signature="e#14503#14652#0" expanded="false" />
-            <element signature="e#14657#14800#0" expanded="false" />
-            <element signature="e#14805#15002#0" expanded="false" />
-            <element signature="e#15582#15833#0" expanded="false" />
-            <element signature="e#15837#16340#0" expanded="false" />
-            <element signature="e#16344#16558#0" expanded="false" />
-            <element signature="e#16562#16701#0" expanded="false" />
-            <element signature="e#16704#16870#0" expanded="false" />
-            <element signature="e#16873#17042#0" expanded="false" />
-            <element signature="e#17046#17229#0" expanded="false" />
-            <element signature="e#17627#18029#0" expanded="false" />
-            <element signature="e#18033#18250#0" expanded="false" />
-            <element signature="e#18253#18432#0" expanded="false" />
-            <element signature="e#18435#18614#0" expanded="false" />
-            <element signature="e#18618#18845#0" expanded="false" />
-            <element signature="e#18849#19027#0" expanded="false" />
-            <element signature="e#19031#19206#0" expanded="false" />
-            <element signature="e#19209#19384#0" expanded="false" />
-            <element signature="e#19387#19562#0" expanded="false" />
-            <element signature="e#19566#19743#0" expanded="false" />
-            <element signature="e#19747#19823#0" expanded="false" />
+            <element signature="e#14338#14487#0" expanded="false" />
+            <element signature="e#14492#14585#0" expanded="false" />
+            <element signature="e#14744#14887#0" expanded="false" />
+            <element signature="e#14892#15089#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -645,89 +743,100 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#0#38#0" expanded="true" />
-            <element signature="e#1899#5150#0" expanded="false" />
-            <element signature="e#5556#6221#0" expanded="false" />
-            <element signature="e#6227#6620#0" expanded="false" />
-            <element signature="e#6626#7678#0" expanded="false" />
-            <element signature="e#7684#8198#0" expanded="false" />
-            <element signature="e#8204#8591#0" expanded="false" />
-            <element signature="e#8597#9819#0" expanded="false" />
-            <element signature="e#9825#10035#0" expanded="false" />
-            <element signature="e#10041#10442#0" expanded="false" />
-            <element signature="e#10448#11239#0" expanded="false" />
-            <element signature="e#11245#11575#0" expanded="false" />
-            <element signature="e#11770#12969#0" expanded="false" />
-            <element signature="e#12975#14245#0" expanded="false" />
-            <element signature="e#14251#14400#0" expanded="false" />
-            <element signature="e#14405#14498#0" expanded="false" />
-            <element signature="e#14503#14652#0" expanded="false" />
-            <element signature="e#14657#14800#0" expanded="false" />
-            <element signature="e#14805#15002#0" expanded="false" />
-            <element signature="e#15582#15833#0" expanded="false" />
-            <element signature="e#15837#16340#0" expanded="false" />
-            <element signature="e#16344#16558#0" expanded="false" />
-            <element signature="e#16562#16701#0" expanded="false" />
-            <element signature="e#16704#16870#0" expanded="false" />
-            <element signature="e#16873#17042#0" expanded="false" />
-            <element signature="e#17046#17229#0" expanded="false" />
-            <element signature="e#17627#18029#0" expanded="false" />
-            <element signature="e#18033#18250#0" expanded="false" />
-            <element signature="e#18253#18432#0" expanded="false" />
-            <element signature="e#18435#18614#0" expanded="false" />
-            <element signature="e#18618#18845#0" expanded="false" />
-            <element signature="e#18849#19027#0" expanded="false" />
-            <element signature="e#19031#19206#0" expanded="false" />
-            <element signature="e#19209#19384#0" expanded="false" />
-            <element signature="e#19387#19562#0" expanded="false" />
-            <element signature="e#19566#19743#0" expanded="false" />
-            <element signature="e#19747#19823#0" expanded="false" />
+            <element signature="e#14338#14487#0" expanded="false" />
+            <element signature="e#14492#14585#0" expanded="false" />
+            <element signature="e#14744#14887#0" expanded="false" />
+            <element signature="e#14892#15089#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/vcgen/src/vcgen.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.361809">
-          <caret line="488" column="3" selection-start-line="488" selection-start-column="3" selection-end-line="488" selection-end-column="3" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#0#38#0" expanded="true" />
-            <element signature="e#1899#5150#0" expanded="false" />
-            <element signature="e#5556#6221#0" expanded="false" />
-            <element signature="e#6227#6620#0" expanded="false" />
-            <element signature="e#6626#7678#0" expanded="false" />
-            <element signature="e#7684#8198#0" expanded="false" />
-            <element signature="e#8204#8591#0" expanded="false" />
-            <element signature="e#8597#9819#0" expanded="false" />
-            <element signature="e#9825#10035#0" expanded="false" />
-            <element signature="e#10041#10442#0" expanded="false" />
-            <element signature="e#10448#11239#0" expanded="false" />
-            <element signature="e#11245#11575#0" expanded="false" />
-            <element signature="e#11770#12969#0" expanded="false" />
-            <element signature="e#12975#14245#0" expanded="false" />
-            <element signature="e#14251#14400#0" expanded="false" />
-            <element signature="e#14405#14498#0" expanded="false" />
-            <element signature="e#14503#14652#0" expanded="false" />
-            <element signature="e#14657#14800#0" expanded="false" />
-            <element signature="e#14805#15002#0" expanded="false" />
-            <element signature="e#15582#15833#0" expanded="false" />
-            <element signature="e#15837#16340#0" expanded="false" />
-            <element signature="e#16344#16558#0" expanded="false" />
-            <element signature="e#16562#16701#0" expanded="false" />
-            <element signature="e#16704#16870#0" expanded="false" />
-            <element signature="e#16873#17042#0" expanded="false" />
-            <element signature="e#17046#17229#0" expanded="false" />
-            <element signature="e#17627#18029#0" expanded="false" />
-            <element signature="e#18033#18250#0" expanded="false" />
-            <element signature="e#18253#18432#0" expanded="false" />
-            <element signature="e#18435#18614#0" expanded="false" />
-            <element signature="e#18618#18845#0" expanded="false" />
-            <element signature="e#18849#19027#0" expanded="false" />
-            <element signature="e#19031#19206#0" expanded="false" />
-            <element signature="e#19209#19384#0" expanded="false" />
-            <element signature="e#19387#19562#0" expanded="false" />
-            <element signature="e#19566#19743#0" expanded="false" />
-            <element signature="e#19747#19823#0" expanded="false" />
+            <element signature="e#14338#14487#0" expanded="false" />
+            <element signature="e#14492#14585#0" expanded="false" />
+            <element signature="e#14744#14887#0" expanded="false" />
+            <element signature="e#14892#15089#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vcgen/imp/find.imp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vcgen/imp/empty.imp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vcgen/imp/invarianttest2.imp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="12" column="3" selection-start-line="12" selection-start-column="3" selection-end-line="12" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vcgen/imp/multa.imp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vcgen/imp/mult.imp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vcgen/imp/invarianttest.imp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vcgen/imp/iftest.imp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vcgen/imp/count.imp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3655914">
+          <caret line="8" column="10" selection-start-line="8" selection-start-column="10" selection-end-line="8" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vcgen/imp/simple.imp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="2" column="2" selection-start-line="2" selection-start-column="2" selection-end-line="2" selection-end-column="2" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vcgen/src/vcgen.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="3.1503758">
+          <caret line="450" column="92" selection-start-line="450" selection-start-column="92" selection-end-line="450" selection-end-column="92" />
+          <folding>
+            <element signature="e#14338#14487#0" expanded="false" />
+            <element signature="e#14492#14585#0" expanded="false" />
+            <element signature="e#14744#14887#0" expanded="false" />
+            <element signature="e#14892#15089#0" expanded="false" />
           </folding>
         </state>
       </provider>

@@ -397,6 +397,69 @@ object VCGen {
       for (s <- gc) {
         handleGCStatement(s, level)
       }
+      // please let this work please
+      println(generateVC(gc))
+    }
+
+    // from GC to VC (Weakest precondition) in boolean format
+    def generateVC(gcs: GCBlock): BoolExp = {
+
+      // seed value
+      var formula = BTrue()
+
+      // unwrap the GC block
+      def computeWP(gcs: GCBlock, b: BoolExp): BoolExp = {
+        gcs match {
+          case Nil => b
+          case gc :: tail => computeWP(tail, computeWPStep(gc, b))
+        }
+      }
+
+      // for translating havocs-- since varCounter is continuously running we are guarenteed no conflicts
+      def newFreshVariable() : String = {
+        varCounter += 1
+        "a" + varCounter
+      }
+
+      // rules for each of the GC commands minus the c1 ; c2 case
+      def computeWPStep(gc: GCStatement, b: BoolExp): BoolExp = {
+        gc match {
+          case assume: Assume => BImplies(assume.b, b)
+          case havoc: Havoc => replaceVarInBoolExp(b, havoc.x, newFreshVariable())
+          case assert: Assert => BConj(assert.b, b)
+          case parens: GCParens => computeWP(parens.gc, b)
+          case box: BoxOp => BConj(computeWPStep(box.left, b), computeWPStep(box.right, b))
+        }
+      }
+
+      // returning-- essentially, the whole function is a wrapper for this
+      computeWP(gcs, formula)
+    }
+
+    // just like our replace arithmetic method
+    def replaceVarInBoolExp(exp: BoolExp, find: String, replace: String) : BoolExp = {
+      exp match {
+        case cmp: BCmp => {
+          var left: ArithExp = cmp.cmp._1
+          var comparator: String = cmp.cmp._2
+          var right: ArithExp = cmp.cmp._3
+          BCmp((replaceVarInArithExp(left, find, replace), comparator, replaceVarInArithExp(left, find, replace)))
+        }
+        case implies: BImplies => BImplies(replaceVarInBoolExp(implies.left, find, replace),
+          replaceVarInBoolExp(implies.right, find, replace))
+        case bnot: BNot => BNot(replaceVarInBoolExp(bnot.b, find, replace))
+        case bdisj: BDisj => BDisj(replaceVarInBoolExp(bdisj.left, find, replace),
+          replaceVarInBoolExp(bdisj.right, find, replace))
+        case bconj: BConj => BConj(replaceVarInBoolExp(bconj.left, find, replace),
+          replaceVarInBoolExp(bconj.right, find, replace))
+        case fa: BForAll => {
+          var str : String = if (fa.x == find) replace else fa.x
+          BForAll(str, replaceVarInBoolExp(fa.b, find, replace))
+        }
+        case parens: BParens => BParens(replaceVarInBoolExp(parens.b, find, replace))
+        case t: BTrue => t
+        case f: BFalse => f
+      }
     }
 
     def handleAssume(a: Assume, level: Int) = {
@@ -423,6 +486,11 @@ object VCGen {
         handleGCStatement(b.right, level+1)
       printlnTab(")", level)
     }
+  }
+
+  // take the VC from the computed weakest precondition of the last step and write it in Z3 syntax
+  def generateZ3(wp : BoolExp): Unit = {
+    // todo
   }
 
   def main(args: Array[String]): Unit = {

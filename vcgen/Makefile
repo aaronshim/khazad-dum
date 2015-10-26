@@ -2,7 +2,7 @@ SRC = src/vcgen.scala
 
 all: help
 	-[ -e classes ] || mkdir classes
-	scalac -d classes ${SRC}
+	scalac -feature -d classes ${SRC}
 
 help:
 	@echo "This script compiles the file(s) ${SRC}"

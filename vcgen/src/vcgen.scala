@@ -1,6 +1,7 @@
 import scala.util.parsing.combinator._
-import java.io.FileReader
-
+import sys.process._
+//import scala.language.postfixOps
+import java.io._
 
 object VCGen {
 
@@ -630,6 +631,25 @@ object VCGen {
     // now what?
     println("\nOUR Z3 INPUT:")
     println(input)
+
+    // processor builder!
+    try {
+      var output: String = ("z3 -in" #< new ByteArrayInputStream(input.getBytes)).!!
+      println("\nOUR Z3 OUTPUT:\n" + output)
+      output match {
+        case x if x.startsWith("unsat") => println("Program valid.")
+        case x if x.startsWith("sat") => {
+          println("Program is not valid.")
+          input += "(get-model)\n"
+          output = ("z3 -in" #< new ByteArrayInputStream(input.getBytes)).!!
+          println("\nProgram is not valid under the conditions:\n" + output)
+        }
+        case _ => println("Z3 WTF?!?!?!")
+      }
+    }
+    catch {
+      case e: Exception => println("Z3 crashed on this input...")
+    }
   }
 
   def main(args: Array[String]): Unit = {

@@ -1,6 +1,8 @@
-program mult is
+program mult
+  pre x = 0 && x <= n
+  post p = x * m
+is
   p := 0;
-  x := 0;
   while x < n
     inv x <= n
     inv p = x * m

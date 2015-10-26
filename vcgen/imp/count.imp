@@ -1,10 +1,9 @@
 program count
-  pre x = 0
   post x = 11
 is
   x := 0;
   while x <= 10 do
     x := x + 1;
   end
-  x := 15;
+  x := 11;
 end

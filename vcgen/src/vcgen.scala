@@ -220,7 +220,7 @@ object VCGen {
             if (invariant == None) {
               invariant = Option(invar.cond)
             } else {
-              invariant = Option(BDisj(invar.cond, invariant.get))
+              invariant = Option(BConj(invar.cond, invariant.get))
             }
           }
         }
@@ -311,7 +311,7 @@ object VCGen {
 
     def replaceVarInArithExp(ae: ArithExp, x: String, tmp: String): ArithExp = {
       ae match {
-        case v: Var => return Var(tmp)
+        case v: Var => if (x.equals(v.name)) Var(tmp) else v
         case v: AVar => {
           return AVar(tmp, replaceVarInArithExp(v.index, x, tmp))
         }
@@ -380,14 +380,14 @@ object VCGen {
             if (preconditions == None) {
               preconditions = Option(pre.cond)
             } else {
-              preconditions = Option(BDisj(pre.cond, preconditions.get))
+              preconditions = Option(BConj(pre.cond, preconditions.get))
             }
           }
           case post: Postcondition => {
             if (postconditions == None) {
               postconditions = Option(post.cond)
             } else {
-              postconditions = Option(BDisj(post.cond, postconditions.get))
+              postconditions = Option(BConj(post.cond, postconditions.get))
             }
           }
         }
@@ -410,6 +410,27 @@ object VCGen {
       }
     }
 
+    // case class Assume(b: BoolExp) extends GCStatement
+    // case class Havoc(x: String) extends GCStatement
+    // case class Assert(b: BoolExp) extends GCStatement
+    // case class GCParens(gc: GCBlock) extends GCStatement
+    // case class BoxOp(left: GCStatement, right: GCStatement) extends GCStatement
+
+    // def processHavocs(gcs: GCBlock): GCBlock = {
+    //   val head: GCStatement = gcs.head()
+
+    //   head match {
+    //     case x: Havoc => Havoc(newFreshVariable(x.x)) :::
+    //     case _ => gc
+    //   }
+
+    //   var newGC: GCBlock = List()
+
+    //   gcs.foldLeft(seed)((head) => newGC :+= processHavocsStep(head))
+
+    //   return newGC
+    // }
+
     // from GC to VC (Weakest precondition) in boolean format
     def generateVC(gcs: GCBlock): BoolExp = {
 
@@ -425,7 +446,11 @@ object VCGen {
       def computeWPStep(gc: GCStatement, b: BoolExp): BoolExp = {
         gc match {
           case assume: Assume => BImplies(assume.b, b)
-          case havoc: Havoc => replaceVarInBoolExp(b, havoc.x, newFreshVariable(havoc.x))
+          case havoc: Havoc => {
+            val newVarName: String = newFreshVariable(havoc.x)
+            // println("Havocing " + havoc.x + " with " + newVarName)
+            replaceVarInBoolExp(b, havoc.x, newVarName)
+          }
           case assert: Assert => BConj(assert.b, b)
           case parens: GCParens => computeWP(parens.gc, b)
           case box: BoxOp => BConj(computeWPStep(box.left, b), computeWPStep(box.right, b))
@@ -460,7 +485,7 @@ object VCGen {
         case bconj: BConj => BConj(replaceVarInBoolExp(bconj.left, find, replace),
           replaceVarInBoolExp(bconj.right, find, replace))
         case fa: BForAll => {
-          var str : String = if (fa.x == find) replace else fa.x
+          var str : String = if (fa.x.equals(find)) replace else fa.x
           BForAll(str, replaceVarInBoolExp(fa.b, find, replace))
         }
         case parens: BParens => BParens(replaceVarInBoolExp(parens.b, find, replace))
@@ -621,9 +646,15 @@ object VCGen {
         handleGC(gc)
 
         // WEAKEST PRECONDITIONS FORMULA
+        // gc = processHavocs(gc)
         var wp = generateVC(gc)
         println("\nOur Weakest Precondition calculation:")
-        println(wp)
+        // wp = cBE(wp)
+        // wp = cBE(wp)
+        // wp = cBE(wp)
+        // wp = cBE(wp)
+        // wp = cBE(wp)
+        handleBoolExp(wp)
 
         // Z3 LANGUAGE TRANSLATION
         generateZ3(wp)
@@ -631,6 +662,70 @@ object VCGen {
       // case Success(r, n) => handleResult(r)
       case Failure(msg, n) => println(msg)
       case Error(msg, n) => println(msg)
+    }
+  }
+
+  def cBE(b: BoolExp): BoolExp = {
+    b match {
+      case x: BImplies => {
+        x.left match {
+          case y: BFalse => BTrue()
+          case _ => {
+            x.right match {
+              case y: BImplies => {
+                cBE(BImplies(BConj(cBE(x.left), cBE(y.left)), cBE(y.right)))
+              }
+              case _ => BImplies(cBE(x.left), cBE(x.right))
+            }
+          }
+        }
+      }
+      case x: BNot => BNot(cBE(x.b))
+      case x: BDisj => {
+        x.left match {
+          case y: BFalse => cBE(x.right)
+          case y: BTrue => BTrue()
+          case _ => {
+            x.right match {
+              case y: BFalse => cBE(x.left)
+              case y: BTrue => BTrue()
+              case _ => BDisj(cBE(x.left), cBE(x.right))
+            }
+          }
+        }
+      }
+      case x: BConj => {
+        x.left match {
+          case y: BTrue => cBE(x.right)
+          case y: BFalse => BFalse()
+          case _ => {
+            x.right match {
+              case y: BTrue => cBE(x.left)
+              case y: BFalse => BFalse()
+              case _ => BConj(cBE(x.left), cBE(x.right))
+            }
+          }
+        }
+      }
+      case x: BForAll => BForAll(x.x, cBE(x.b))
+      case x: BParens => BParens(cBE(x))
+      case x: BCmp => {
+        x.cmp._2 match {
+          case "=" => {
+            x.cmp._1 match {
+              case y: Var => {
+                x.cmp._3 match {
+                  case z: Var => BTrue()
+                  case _ => x
+                }
+              }
+              case _ => x
+            }
+          }
+          case _ => x
+        }
+      }
+      case _ => b
     }
   }
 

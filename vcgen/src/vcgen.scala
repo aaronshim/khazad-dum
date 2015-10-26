@@ -226,24 +226,33 @@ object VCGen {
         }
       }
 
-      var invariantOrTrue: BoolExp = BTrue()
+      // invariant just before entering the loop
       if (invariant != None) {
-        invariantOrTrue = invariant.get
+        gctmp :+= Assert(invariant.get)
       }
-
-      gctmp :+= Assert(invariantOrTrue)
 
       //havocs
       val vars: List[String] = extractVars(body)
       gctmp = gctmp ::: vars.map { x => Havoc(x) }
 
-      gctmp :+= Assume(invariantOrTrue)
+      // invariant just after entering the loop
+      if (invariant != None) {
+        gctmp :+= Assume(invariant.get)
+      }
+
+      // try to construct the stuff to go in the body of the GC
+      //  (albeit a bit messily constructed)
+      var endPiece : GCBlock = List()
+      if (invariant != None) {
+        endPiece :+= Assert(invariant.get)
+      }
+      endPiece :+= Assume(BFalse())
 
       gctmp :+= BoxOp(
         GCParens(
           Assume(cond) +:
           traverseCode(body) :::
-          List(Assert(invariantOrTrue), Assume(BFalse()))
+          endPiece
         ),
         Assume(BNot(cond))
       )
@@ -399,8 +408,6 @@ object VCGen {
       for (s <- gc) {
         handleGCStatement(s, level)
       }
-      // please let this work please
-      println(generateVC(gc))
     }
 
     // from GC to VC (Weakest precondition) in boolean format
@@ -412,14 +419,6 @@ object VCGen {
       // unwrap the GC block
       def computeWP(gcs: GCBlock, seed: BoolExp): BoolExp = {
         gcs.foldRight(seed)((head, b) => computeWPStep(head, b))
-
-        /*
-        gcs.reverse match {
-          case Nil => seed
-          case gc :: tail => computeWP(tail.reverse, computeWPStep(gc, seed))
-        }
-        */
-
       }
 
       // rules for each of the GC commands minus the c1 ; c2 case
@@ -604,7 +603,7 @@ object VCGen {
     input += "(check-sat)\n"
 
     // now what?
-    println("OUR Z3 INPUT:")
+    println("\nOUR Z3 INPUT:")
     println(input)
   }
 
@@ -617,9 +616,17 @@ object VCGen {
 
     parsedProgram match {
       case Success(r, n) => {
+        // GUARDED COMMANDS
         var gc = generateGC(r)
         handleGC(gc)
-        generateZ3(generateVC(gc))
+
+        // WEAKEST PRECONDITIONS FORMULA
+        var wp = generateVC(gc)
+        println("\nOur Weakest Precondition calculation:")
+        println(wp)
+
+        // Z3 LANGUAGE TRANSLATION
+        generateZ3(wp)
       }
       // case Success(r, n) => handleResult(r)
       case Failure(msg, n) => println(msg)

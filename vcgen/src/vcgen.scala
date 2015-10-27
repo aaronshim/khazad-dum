@@ -18,7 +18,6 @@ object VCGen {
   case class Parens(a: ArithExp) extends ArithExp
   case class AVar(name: String, index: ArithExp) extends ArithExp
 
-
   /* Comparisons of arithmetic expressions. */
   type Comparison = Product3[ArithExp, String, ArithExp]
 
@@ -31,7 +30,8 @@ object VCGen {
   case class BNot(b: BoolExp) extends BoolExp
   case class BDisj(left: BoolExp, right: BoolExp) extends BoolExp
   case class BConj(left: BoolExp, right: BoolExp) extends BoolExp
-  case class BForAll(x: String, b: BoolExp) extends BoolExp
+  case class BForAll(vars: List[Var], b: BoolExp) extends BoolExp
+  case class BExists(vars: List[Var], b: BoolExp) extends BoolExp
   case class BParens(b: BoolExp) extends BoolExp
   case class BTrue() extends BoolExp
   case class BFalse() extends BoolExp
@@ -97,18 +97,48 @@ object VCGen {
         case left ~ right => BImplies(left, right)
       }
 
+    def makeBForAll(list: List[String], b: BoolExp): BoolExp = {
+      var vars = List[Var]()
+      for (varName <- list) {
+        vars :+= Var(varName)
+      }
+      BForAll(vars, b)
+    }
+    def makeBExists(list: List[String], b: BoolExp): BoolExp = {
+      var vars = List[Var]()
+      for (varName <- list) {
+        vars :+= Var(varName)
+      }
+      BExists(vars, b)
+    }
+
     /* Parsing for BoolExp. */
     def bforall : Parser[BoolExp] =
-      ("forall" ~> pvar <~ ",") ~ implies ^^ {
-        case v ~ b => BForAll(v, b)
+      ("forall" ~> rep(pvar) <~ ",") ~ implies ^^ {
+        case list ~ b => {
+          makeBForAll(list, b)
+        }
       } |
-      ("forall" ~> pvar <~ ",") ~ bexp ^^ {
-        case v ~ b => BForAll(v, b)
+      ("forall" ~> rep(pvar) <~ ",") ~ bexp ^^ {
+        case list ~ b => {
+          makeBForAll(list, b)
+        }
+      }
+    def bexists : Parser[BoolExp] =
+      ("exists" ~> rep(pvar) <~ ",") ~ implies ^^ {
+        case list ~ b => {
+          makeBExists(list, b)
+        }
+      } |
+      ("exists" ~> rep(pvar) <~ ",") ~ bexp ^^ {
+        case list ~ b => {
+          makeBExists(list, b)
+        }
       }
     def batom : Parser[BoolExp] =
       "(" ~> bexp <~ ")" |
       comp ^^ { BCmp(_) } |
-      "!" ~> batom ^^ { BNot(_) } | bforall | implies
+      "!" ~> batom ^^ { BNot(_) } | bforall | bexists | implies
     def bconj : Parser[BoolExp] =
       batom ~ rep("&&" ~> batom) ^^ {
         case left ~ list => (left /: list) { BConj(_, _) }
@@ -486,8 +516,20 @@ object VCGen {
         case bconj: BConj => BConj(replaceVarInBoolExp(bconj.left, find, replace),
           replaceVarInBoolExp(bconj.right, find, replace))
         case fa: BForAll => {
-          var str : String = if (fa.x.equals(find)) replace else fa.x
-          BForAll(str, replaceVarInBoolExp(fa.b, find, replace))
+          var newVars = List[Var]()
+          for (v <- fa.vars) {
+            val str : String = if (v.name.equals(find)) replace else v.name
+            newVars :+= Var(str)
+          }
+          BForAll(newVars, replaceVarInBoolExp(fa.b, find, replace))
+        }
+        case fa: BExists => {
+          var newVars = List[Var]()
+          for (v <- fa.vars) {
+            val str : String = if (v.name.equals(find)) replace else v.name
+            newVars :+= Var(str)
+          }
+          BExists(newVars, replaceVarInBoolExp(fa.b, find, replace))
         }
         case parens: BParens => BParens(replaceVarInBoolExp(parens.b, find, replace))
         case t: BTrue => t
@@ -534,7 +576,20 @@ object VCGen {
         case bnot: BNot => extractVarsFromBExp(bnot.b)
         case bdisj: BDisj => extractVarsFromBExp(bdisj.left) ::: extractVarsFromBExp(bdisj.right)
         case bconj: BConj => extractVarsFromBExp(bconj.left) ::: extractVarsFromBExp(bconj.right)
-        case fa: BForAll => fa.x :: extractVarsFromBExp(fa.b)
+        case fa: BForAll => {
+          var varNames = List[String]()
+          for (v <- fa.vars) {
+            varNames :+= v.name
+          }
+          varNames ::: extractVarsFromBExp(fa.b)
+        }
+        case fa: BExists => {
+          var varNames = List[String]()
+          for (v <- fa.vars) {
+            varNames :+= v.name
+          }
+          varNames ::: extractVarsFromBExp(fa.b)
+        }
         case parens: BParens => extractVarsFromBExp(parens.b)
         case _ => List()
       }
@@ -617,7 +672,22 @@ object VCGen {
         case x: BNot => "(not " + boolExpToSMT(x.b) + ")"
         case x: BDisj => "(or " + boolExpToSMT(x.left) + " " + boolExpToSMT(x.right) + ")"
         case x: BConj => "(and " + boolExpToSMT(x.left) + " " + boolExpToSMT(x.right) + ")"
-        case x: BForAll => "(forall ((" + x.x + " Int)) " + boolExpToSMT(x.b) + ")"
+        case x: BForAll => {
+          var str: String = "(forall ("
+          for (v <- x.vars) {
+            str += "(" + v.name + " Int)"
+          }
+          str += ") " + boolExpToSMT(x.b) + ")"
+          return str
+        }
+        case x: BExists => {
+          var str: String = "(exists ("
+          for (v <- x.vars) {
+            str += "(" + v.name + " Int)"
+          }
+          str += ") " + boolExpToSMT(x.b) + ")"
+          return str
+        }
         case x: BParens => boolExpToSMT(x.b) // everything comes attached to parenthesis anyway
         case x: BTrue => "true" // these primitives will not be called outside parenthetical structures?
         case x: BFalse => "false"
@@ -727,7 +797,8 @@ object VCGen {
           }
         }
       }
-      case x: BForAll => BForAll(x.x, cBE(x.b))
+      case x: BForAll => BForAll(x.vars, cBE(x.b))
+      case x: BExists => BExists(x.vars, cBE(x.b))
       case x: BParens => BParens(cBE(x))
       case x: BCmp => {
         x.cmp._2 match {
@@ -814,6 +885,7 @@ object VCGen {
       case disj: BDisj => handleBDisj(disj, level)
       case imp: BImplies => handleBImplies(imp, level)
       case fa: BForAll => handleBForAll(fa, level)
+      case fa: BExists => handleBExists(fa, level)
       case _ => printlnTab(b, level)
 // BNot
 // BParens
@@ -865,7 +937,13 @@ object VCGen {
 
   def handleBForAll(fa: BForAll, level: Int) = {
     printlnTab("BForAll(", level)
-      printlnTab(fa.x, level+1)
+      fa.vars.map { v => printlnTab(v.name, level+1) }
+      handleBoolExp(fa.b, level+1)
+    printlnTab(")", level)
+  }
+  def handleBExists(fa: BExists, level: Int) = {
+    printlnTab("BExists(", level)
+      fa.vars.map { v => printlnTab(v.name, level+1) }
       handleBoolExp(fa.b, level+1)
     printlnTab(")", level)
   }

@@ -608,7 +608,7 @@ object VCGen {
         */
         case x: BCmp => {
           x.cmp._2 match {
-            case "!=" => "(not (=" + aExpToSMT(x.cmp._1) + " " + aExpToSMT(x.cmp._3) + "))"
+            case "!=" => "(not (= " + aExpToSMT(x.cmp._1) + " " + aExpToSMT(x.cmp._3) + "))"
             case comparator => "(" + comparator + " " +  aExpToSMT(x.cmp._1) + " " + aExpToSMT(x.cmp._3) + ")"
           }
         }

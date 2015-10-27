@@ -1,0 +1,17 @@
+program gandalf2
+  pre  n >= 0
+  pre  x < 0
+  pre  p = ((n) * m)
+  post p = n * m
+  post 6 = 6
+is
+  p := ((0) + (0));
+  x := 0;
+  while (x < n)
+    inv (x <= n) || p = x * m && p != p && p > p && p < p
+    inv p = (x) * m
+  do
+    x := x + (1 + 1 % 1);
+    p := (p + m) + 0;
+  end
+end

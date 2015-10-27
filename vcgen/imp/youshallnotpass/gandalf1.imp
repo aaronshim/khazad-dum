@@ -1,0 +1,18 @@
+program gandalf1
+  pre  n >= 0
+  pre  x < 0
+  pre  p = n * m
+  post p = n * m
+  post 6 = 6
+  post forall a , a > 0
+is
+  p := 0;
+  x := 0;
+  while x < n
+    inv x <= n
+    inv p = x * m
+  do
+    x := x + 1;
+    p := p + m;
+  end
+end

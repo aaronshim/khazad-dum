@@ -1,0 +1,7 @@
+program balrog2
+  post n = 11
+is
+  n := 0;
+  while n < 10 do
+  end
+end

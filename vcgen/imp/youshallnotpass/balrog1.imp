@@ -1,0 +1,18 @@
+program balrog1
+  pre  n >= 0
+  pre  x < 0
+  pre  p = n * m
+  post p = n * m
+  post 6 = 6
+is
+  p := 0;
+  x := 0;
+  while x < n
+    inv x <= n
+    inv p = x * m
+    inv p = -(-x) * (m / 1 + 0)
+  do
+    x := x + 1;
+    p := p + m;
+  end
+end

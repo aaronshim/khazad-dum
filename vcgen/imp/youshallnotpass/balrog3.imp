@@ -1,0 +1,6 @@
+program balrog3
+  post forall a c d e, exists b f g h, a > b
+is
+  a := 1;
+  b := 2;
+end
